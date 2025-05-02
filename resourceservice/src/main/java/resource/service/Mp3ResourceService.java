@@ -12,6 +12,7 @@ import resource.client.SongServiceClient;
 import resource.entity.Mp3Resource;
 import resource.repository.Mp3ResourceRepository;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -31,10 +32,10 @@ public class Mp3ResourceService {
         resource.setFileData(file);
         Mp3Resource saved = repository.save(resource);
 
-//        try (InputStream is = new ByteArrayInputStream(file)) {
-//            Map<String, String> tags = extractTags(is);
-//            songClient.createSongMetadata(saved.getId(), tags);
-//        }
+        try (InputStream is = new ByteArrayInputStream(file)) {
+            Map<String, String> tags = extractTags(is);
+            songClient.createSongMetadata(saved.getId(), tags);
+        }
 
         return saved.getId();
     }

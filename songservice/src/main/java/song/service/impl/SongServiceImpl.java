@@ -1,5 +1,8 @@
 package song.service.impl;
 
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 import song.dto.SongDto;
 import song.entity.Song;
 import song.exception.BadRequestException;
@@ -7,11 +10,9 @@ import song.exception.ConflictException;
 import song.mapper.SongMapper;
 import song.repository.SongRepository;
 import song.service.SongService;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 public class SongServiceImpl implements SongService {
@@ -19,7 +20,7 @@ public class SongServiceImpl implements SongService {
     private final SongRepository repository;
     private final SongMapper mapper;
     private final RestTemplate restTemplate;
-    private final String resourceServiceUrl = "http://localhost:8081/resources/";
+    private final String resourceServiceUrl = "http://localhost:8081/recource/";
 
     public SongServiceImpl(SongRepository repository, SongMapper mapper, RestTemplate restTemplate) {
         this.repository = repository;
@@ -28,7 +29,7 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
-    public Long create(SongDto dto) {
+    public SongDto create(SongDto dto) {
         Long resourceId = dto.getId();
 
         try {
@@ -42,16 +43,24 @@ public class SongServiceImpl implements SongService {
         }
         Song entity = mapper.toEntity(dto);
         repository.save(entity);
-        return entity.getId();
+        return dto;
     }
 
     @Override
     public SongDto getById(Long id) {
-        return null;
+        Song song = repository.findById(id).orElseThrow(() -> new RuntimeException("Song not found"));
+        return mapper.toDto(song);
     }
 
     @Override
     public List<Long> deleteByCsv(String csv) {
-        return null;
+        List<Long> ids = Stream.of(csv.split(","))
+                .map(Long::parseLong)
+                .toList();
+
+        return ids.stream()
+                .filter(repository::existsById)
+                .peek(repository::deleteById)
+                .toList();
     }
 }
