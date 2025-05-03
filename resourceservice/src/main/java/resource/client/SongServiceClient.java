@@ -2,6 +2,7 @@ package resource.client;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import resource.dto.SongDto;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,9 +16,7 @@ public class SongServiceClient {
         this.restTemplate = restTemplate;
     }
 
-    public void createSongMetadata(Long resourceId, Map<String, String> tags) {
-        Map<String, String> payload = new HashMap<>(tags);
-        payload.put("resourceId", String.valueOf(resourceId));
-        restTemplate.postForEntity(songServiceUrl, payload, Void.class);
+    public void createSongMetadata(SongDto dto) {
+        restTemplate.postForEntity(songServiceUrl, dto, Void.class);
     }
 }

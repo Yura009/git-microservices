@@ -56,7 +56,6 @@ public class Mp3ResourceController {
 
         List<Long> deletedIds = service.deleteByIds(ids);
         Map<String, Object> response = new HashMap<>();
-        System.out.println(deletedIds);
         response.put("ids", deletedIds);
         return ResponseEntity.ok(response);
     }

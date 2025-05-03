@@ -30,20 +30,11 @@ public class SongServiceImpl implements SongService {
 
     @Override
     public SongDto create(SongDto dto) {
-        Long resourceId = dto.getId();
-
-        try {
-            restTemplate.getForEntity(resourceServiceUrl + resourceId, byte[].class);
-        } catch (HttpClientErrorException.NotFound e) {
-            throw new BadRequestException("Resource with ID=" + resourceId + " does not exist");
-        }
-
-        if (repository.existsById(resourceId)) {
+        Song song = mapper.toEntity(dto);
+        if (repository.existsById(song.getId())) {
             throw new ConflictException("Metadata for this resource already exists");
         }
-        Song entity = mapper.toEntity(dto);
-        repository.save(entity);
-        return dto;
+        return mapper.toDto(repository.save(song));
     }
 
     @Override
@@ -63,4 +54,5 @@ public class SongServiceImpl implements SongService {
                 .peek(repository::deleteById)
                 .toList();
     }
+
 }

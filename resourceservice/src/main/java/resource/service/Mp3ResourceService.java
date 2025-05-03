@@ -8,6 +8,7 @@ import org.apache.tika.sax.BodyContentHandler;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 import resource.client.SongServiceClient;
+import resource.dto.SongDto;
 import resource.entity.Mp3Resource;
 import resource.repository.Mp3ResourceRepository;
 
@@ -30,12 +31,9 @@ public class Mp3ResourceService {
         Mp3Resource resource = new Mp3Resource();
         resource.setFileData(file);
         Mp3Resource saved = repository.save(resource);
-
-        try (InputStream is = new ByteArrayInputStream(file)) {
-            Map<String, String> tags = extractTags(is);
-            songClient.createSongMetadata(saved.getId(), tags);
-        }
-
+        SongDto dto = extractTags(file);
+        dto.setId(saved.getId());
+        songClient.createSongMetadata(dto);
         return saved.getId();
     }
 
@@ -56,19 +54,22 @@ public class Mp3ResourceService {
         return deleted;
     }
 
-    private Map<String, String> extractTags(InputStream inputStream) throws IOException, TikaException, SAXException {
-        AutoDetectParser parser = new AutoDetectParser();
+    private SongDto extractTags(byte[] file) throws IOException, TikaException, SAXException {
+        InputStream stream = new ByteArrayInputStream(file);
+        BodyContentHandler handler = new BodyContentHandler();
         Metadata metadata = new Metadata();
-        parser.parse(inputStream, new BodyContentHandler(), metadata, new ParseContext());
+        AutoDetectParser parser = new AutoDetectParser();
+        ParseContext context = new ParseContext();
+        parser.parse(stream, handler, metadata, context);
 
-        Map<String, String> tags = new HashMap<>();
-        tags.put("name", getSafe(metadata, "title"));
-        tags.put("artist", getSafe(metadata, "xmpDM:artist"));
-        tags.put("album", getSafe(metadata, "xmpDM:album"));
-        tags.put("duration", formatDuration(metadata.get("xmpDM:duration")));
-        tags.put("year", getSafe(metadata, "xmpDM:releaseDate"));
+        SongDto songDto = new SongDto();
+        songDto.setName(getSafe(metadata, "dc:title"));
+        songDto.setArtist(getSafe(metadata, "xmpDM:artist"));
+        songDto.setAlbum(getSafe(metadata, "xmpDM:album"));
+        songDto.setDuration(formatDuration(metadata.get("xmpDM:duration")));
+        songDto.setYear(getSafe(metadata, "xmpDM:releaseDate"));
 
-        return tags;
+        return songDto;
     }
 
     private String getSafe(Metadata metadata, String key) {
