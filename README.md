@@ -34,16 +34,16 @@ git-microservices/
 
 ## 🧩 How It Works
 
-### 🔊 `resource-service`
+### 🔊 `resourceservice`
 
 - Accepts and stores uploaded MP3 files.
 - Uses Apache Tika to extract metadata.
 - Converts duration from seconds to `mm:ss`.
-- Sends the extracted metadata to `song-service` via HTTP.
+- Sends the extracted metadata to `songservice` via HTTP.
 
-### 🎼 `song-service`
+### 🎼 `songservice`
 
-- Receives metadata from `resource-service`.
+- Receives metadata from `resourceservice`.
 - Validates and stores it in its own PostgreSQL database.
 
 > Each MP3 resource has a **one-to-one** relationship with its corresponding metadata.
