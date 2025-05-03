@@ -20,7 +20,7 @@ public class SongServiceImpl implements SongService {
     private final SongRepository repository;
     private final SongMapper mapper;
     private final RestTemplate restTemplate;
-    private final String resourceServiceUrl = "http://localhost:8081/recource/";
+    private final String resourceServiceUrl = "http://localhost:8081/recources/";
 
     public SongServiceImpl(SongRepository repository, SongMapper mapper, RestTemplate restTemplate) {
         this.repository = repository;

@@ -17,7 +17,7 @@ public class SongServiceClient {
 
     public void createSongMetadata(Long resourceId, Map<String, String> tags) {
         Map<String, String> payload = new HashMap<>(tags);
-        payload.put("id", String.valueOf(resourceId));
+        payload.put("resourceId", String.valueOf(resourceId));
         restTemplate.postForEntity(songServiceUrl, payload, Void.class);
     }
 }
