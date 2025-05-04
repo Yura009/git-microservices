@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDto> handleNotFound(NoSuchElementException ex) {
         ErrorDto errorDto = ErrorDto.builder()
                 .errorMessage(ex.getMessage())
-                .errorCode("404")
+                .errorCode(String.valueOf(HttpStatus.NOT_FOUND.value()))
                 .build();
         return new ResponseEntity<>(errorDto, HttpStatus.NOT_FOUND);
     }
@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDto> handleBadRequest(InvalidMp3Exception ex) {
         ErrorDto errorDto = ErrorDto.builder()
                 .errorMessage(ex.getMessage())
-                .errorCode("400")
+                .errorCode(String.valueOf(HttpStatus.BAD_REQUEST.value()))
                 .build();
         return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
     }
@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDto> handleOtherErrors(Exception ex) {
         ErrorDto errorDto = ErrorDto.builder()
                 .errorMessage(ex.getMessage())
-                .errorCode("500")
+                .errorCode(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()))
                 .build();
         return new ResponseEntity<>(errorDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDto> handleNotSupportedMediaType(HttpMediaTypeNotSupportedException ex) {
         ErrorDto errorDto = ErrorDto.builder()
                 .errorMessage("Invalid file format: " + ex.getContentType() + ". Only MP3 files are allowed")
-                .errorCode("400")
+                .errorCode(String.valueOf(HttpStatus.BAD_REQUEST.value()))
                 .build();
         return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
     }
@@ -55,7 +55,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDto> handleNotFoundResource(ResourceNotFoundException ex) {
         ErrorDto errorDto = ErrorDto.builder()
                 .errorMessage(ex.getMessage())
-                .errorCode("404")
+                .errorCode(String.valueOf(HttpStatus.NOT_FOUND.value()))
                 .build();
         return new ResponseEntity<>(errorDto, HttpStatus.NOT_FOUND);
     }
@@ -64,7 +64,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDto> handleConstraintViolation(ConstraintViolationException ex) {
         ErrorDto errorDto = ErrorDto.builder()
                 .errorMessage(ex.getMessage())
-                .errorCode("400")
+                .errorCode(String.valueOf(HttpStatus.BAD_REQUEST.value()))
                 .build();
         return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
     }
@@ -78,7 +78,7 @@ public class GlobalExceptionHandler {
         }
         ErrorDto errorDto = ErrorDto.builder()
                 .errorMessage("Invalid value '" + value + "' for ID. Must be a positive integer")
-                .errorCode("400")
+                .errorCode(String.valueOf(HttpStatus.BAD_REQUEST.value()))
                 .build();
         return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
     }

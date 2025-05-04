@@ -16,4 +16,8 @@ public class SongServiceClient {
     public void createSongMetadata(SongDto dto) {
         restTemplate.postForEntity(songServiceUrl, dto, Void.class);
     }
+
+    public void deleteSongByResourceId(Long resourceId) {
+        restTemplate.delete(songServiceUrl + "?id=" + resourceId);
+    }
 }

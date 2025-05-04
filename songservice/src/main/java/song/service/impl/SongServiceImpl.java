@@ -2,17 +2,15 @@ package song.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import song.dto.SongDto;
 import song.entity.Song;
 import song.exception.ConflictException;
+import song.exception.SongNotFoundException;
 import song.repository.SongRepository;
 import song.service.SongService;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 @Service
@@ -35,7 +33,7 @@ public class SongServiceImpl implements SongService {
     @Override
     public SongDto getById(Long id) {
         Song song = repository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Song metadata with the specified ID does not exist."));
+                .orElseThrow(() -> new SongNotFoundException("Song metadata for ID=" + id + " not found"));
         return mapper.map(song, SongDto.class);
     }
 

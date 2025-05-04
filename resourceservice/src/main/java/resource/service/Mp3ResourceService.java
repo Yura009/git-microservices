@@ -57,6 +57,7 @@ public class Mp3ResourceService {
         for (Long id : ids) {
             if (repository.existsById(id)) {
                 repository.deleteById(id);
+                songClient.deleteSongByResourceId(id);
                 deleted.add(id);
             }
         }
