@@ -1,6 +1,7 @@
 package resource.controller;
 
 import jakarta.validation.constraints.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -14,12 +15,9 @@ import java.util.List;
 @Validated
 @RestController
 @RequestMapping("resources")
+@RequiredArgsConstructor
 public class Mp3ResourceController {
     private final Mp3ResourceService service;
-
-    public Mp3ResourceController(Mp3ResourceService service) {
-        this.service = service;
-    }
 
     @PostMapping(consumes = "audio/mpeg")
     public ResponseEntity<Mp3ResourceDto> upload(@RequestBody byte[] file) {
