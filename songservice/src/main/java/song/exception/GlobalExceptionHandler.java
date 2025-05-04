@@ -3,47 +3,47 @@ package song.exception;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<Map<String, Object>> handleNotFound(NoSuchElementException ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("errorMessage", ex.getMessage());
-        body.put("errorCode", "404");
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    public ResponseEntity<ErrorDto> handleNotFound(NoSuchElementException ex) {
+        ErrorDto errorDto = ErrorDto.builder()
+                .errorMessage(ex.getMessage())
+                .errorCode("404")
+                .build();
+        return new ResponseEntity<>(errorDto, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<Map<String, Object>> handleBadRequest(BadRequestException ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("errorMessage", ex.getMessage());
-        body.put("errorCode", "400");
-        return ResponseEntity.badRequest().body(body);
+    public ResponseEntity<ErrorDto> handleBadRequest(BadRequestException ex) {
+        ErrorDto errorDto = ErrorDto.builder()
+                .errorMessage(ex.getMessage())
+                .errorCode("400")
+                .build();
+        return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<Map<String, Object>> handleConflict(ConflictException ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("errorMessage", ex.getMessage());
-        body.put("errorCode", "409");
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+    public ResponseEntity<ErrorDto> handleConflict(ConflictException ex) {
+        ErrorDto errorDto = ErrorDto.builder()
+                .errorMessage(ex.getMessage())
+                .errorCode("409")
+                .build();
+        return new ResponseEntity<>(errorDto, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<Map<String, Object>> handleConstraintViolation(ConstraintViolationException ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("errorMessage", ex.getMessage());
-        body.put("errorCode", "400");
-        return ResponseEntity.badRequest().body(body);
+    public ResponseEntity<ErrorDto> handleConstraintViolation(ConstraintViolationException ex) {
+        ErrorDto errorDto = ErrorDto.builder()
+                .errorMessage(ex.getMessage())
+                .errorCode("400")
+                .build();
+        return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
     }
 }
