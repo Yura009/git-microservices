@@ -1,5 +1,6 @@
 package resource.exception;
 
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.hibernate.TypeMismatchException;
 import org.springframework.http.HttpStatus;
@@ -62,8 +63,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorDto> handleConstraintViolation(ConstraintViolationException ex) {
+        String message = ex.getConstraintViolations().stream()
+                .map(ConstraintViolation::getMessage)
+                .findFirst()
+                .orElse("Validation failed");
+
         ErrorDto errorDto = ErrorDto.builder()
-                .errorMessage(ex.getMessage())
+                .errorMessage(message)
                 .errorCode(String.valueOf(HttpStatus.BAD_REQUEST.value()))
                 .build();
         return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);

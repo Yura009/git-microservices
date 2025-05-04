@@ -1,10 +1,7 @@
 package song.dto;
 
 import com.drew.lang.annotations.NotNull;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
@@ -13,19 +10,19 @@ public class SongDto {
     @Positive
     private Long id;
 
-    @NotBlank
+    @NotBlank(message = "Song name is required")
     @Size(max = 100)
     private String name;
 
-    @NotBlank
+    @NotBlank(message = "Song artist is required")
     @Size(max = 100)
     private String artist;
 
-    @NotBlank
+    @NotBlank(message = "Song album is required")
     @Size(max = 100)
     private String album;
 
-    @Pattern(regexp = "^\\d{2}:\\d{2}$", message = "Duration must be in mm:ss format")
+    @Pattern(regexp = "^([0-5]?[0-9]):([0-5]?[0-9])$", message = "Duration must be in mm:ss format with leading zeros")
     private String duration;
 
     @Pattern(regexp = "^(19|20)\\d{2}$", message = "Year must be between 1900 and 2099")

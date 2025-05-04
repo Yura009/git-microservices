@@ -29,7 +29,7 @@ public class Mp3ResourceController {
     public ResponseEntity<byte[]> getResource(
             @PathVariable
             @NotNull
-            @Positive
+            @Positive(message = "Invalid value '${validatedValue}' for ID. Must be a positive integer")
             Long id) {
         byte[] fileData = service.getFileDataById(id);
         return ResponseEntity.ok().body(fileData);
@@ -39,8 +39,8 @@ public class Mp3ResourceController {
     public ResponseEntity<DeleteIdsResponseDto> deleteResources(
             @RequestParam(name = "id")
             @NotBlank
-            @Size(max = 200)
-            @Pattern(regexp = "^\\d+(,\\d+)*$", message = "Must be a comma-separated list of numeric IDs")
+            @Size(max = 200, message = "CSV string is too long: received 208 characters, maximum allowed is 200")
+            @Pattern(regexp = "^\\d+(,\\d+)*$", message = "Invalid ID format: '${validatedValue}'. Only positive integers are allowed")
             String id) {
         List<Long> ids = Arrays.stream(id.split(","))
                 .map(Long::parseLong)

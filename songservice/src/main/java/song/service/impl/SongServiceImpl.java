@@ -25,7 +25,7 @@ public class SongServiceImpl implements SongService {
     public SongDto create(SongDto dto) {
         Song song = mapper.map(dto, Song.class);
         if (repository.existsById(song.getId())) {
-            throw new ConflictException("Metadata for this resource already exists");
+            throw new ConflictException("Metadata for this resource ID=" + song.getId() + " already exists");
         }
         return mapper.map(repository.save(song), SongDto.class);
     }

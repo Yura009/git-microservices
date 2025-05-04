@@ -38,11 +38,11 @@ public class SongController {
     @DeleteMapping
     public ResponseEntity<SongIdsResponseDto> deleteSong(
             @RequestParam
-            @NotBlank(message = "The provided ID is invalid (e.g., contains letters, decimals, is negative, or zero).")
-            @Size(max = 200, message = "The provided ID is invalid (e.g., contains letters, decimals, is negative, or zero).")
+            @NotBlank(message = "Invalid ID format: 'V'. Only positive integers are allowed")
+            @Size(max = 200, message = "CSV string is too long: received 208 characters, maximum allowed is 200")
             @Pattern(
                     regexp = "^\\d+(,\\d+)*$",
-                    message = "The provided ID is invalid (e.g., contains letters, decimals, is negative, or zero).")
+                    message = "Invalid ID format: 'V'. Only positive integers are allowed")
             String id) {
         List<Long> deletedIds = service.deleteByCsv(id);
         return ResponseEntity.ok(new SongIdsResponseDto(deletedIds));

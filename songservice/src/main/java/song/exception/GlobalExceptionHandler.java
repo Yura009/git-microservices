@@ -3,6 +3,8 @@ package song.exception;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -53,6 +55,20 @@ public class GlobalExceptionHandler {
                 .errorMessage(ex.getMessage())
                 .errorCode(String.valueOf(HttpStatus.BAD_REQUEST.value()))
                 .details(errors)
+                .build();
+        return new ResponseEntity<>(validationErrorDto, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ValidationErrorDto> handleNotValidArgument(MethodArgumentNotValidException ex){
+        Map<String, String> errorDetails = new HashMap<>();
+        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
+            errorDetails.put(error.getField(), error.getDefaultMessage());
+        }
+        ValidationErrorDto validationErrorDto = ValidationErrorDto.builder()
+                .errorMessage("Validation error")
+                .errorCode(String.valueOf(HttpStatus.BAD_REQUEST.value()))
+                .details(errorDetails)
                 .build();
         return new ResponseEntity<>(validationErrorDto, HttpStatus.BAD_REQUEST);
     }
