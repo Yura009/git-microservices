@@ -1,46 +1,42 @@
 package song.service.impl;
 
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import song.dto.SongDto;
 import song.entity.Song;
-import song.exception.BadRequestException;
 import song.exception.ConflictException;
-import song.mapper.SongMapper;
 import song.repository.SongRepository;
 import song.service.SongService;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 @Service
+@RequiredArgsConstructor
 public class SongServiceImpl implements SongService {
 
     private final SongRepository repository;
-    private final SongMapper mapper;
-    private final RestTemplate restTemplate;
-    private final String resourceServiceUrl = "http://localhost:8081/recources/";
+    private final ModelMapper mapper;
 
-    public SongServiceImpl(SongRepository repository, SongMapper mapper, RestTemplate restTemplate) {
-        this.repository = repository;
-        this.mapper = mapper;
-        this.restTemplate = restTemplate;
-    }
 
     @Override
     public SongDto create(SongDto dto) {
-        Song song = mapper.toEntity(dto);
+        Song song = mapper.map(dto, Song.class);
         if (repository.existsById(song.getId())) {
             throw new ConflictException("Metadata for this resource already exists");
         }
-        return mapper.toDto(repository.save(song));
+        return mapper.map(repository.save(song), SongDto.class);
     }
 
     @Override
     public SongDto getById(Long id) {
-        Song song = repository.findById(id).orElseThrow(() -> new RuntimeException("Song not found"));
-        return mapper.toDto(song);
+        Song song = repository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Song metadata with the specified ID does not exist."));
+        return mapper.map(song, SongDto.class);
     }
 
     @Override

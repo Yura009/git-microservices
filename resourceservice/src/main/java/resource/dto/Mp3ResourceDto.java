@@ -1,4 +1,10 @@
 package resource.dto;
 
-public record Mp3ResourceDto(Long id) {
+import com.drew.lang.annotations.NotNull;
+import lombok.Data;
+
+@Data
+public class Mp3ResourceDto {
+    @NotNull
+    private Long id;
 }

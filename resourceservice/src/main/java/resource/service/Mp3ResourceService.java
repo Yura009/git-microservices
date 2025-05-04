@@ -1,45 +1,54 @@
 package resource.service;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.sax.BodyContentHandler;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 import resource.client.SongServiceClient;
+import resource.dto.Mp3ResourceDto;
 import resource.dto.SongDto;
 import resource.entity.Mp3Resource;
+import resource.exception.InvalidMp3Exception;
+import resource.exception.ResourceNotFoundException;
 import resource.repository.Mp3ResourceRepository;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class Mp3ResourceService {
     private final Mp3ResourceRepository repository;
     private final SongServiceClient songClient;
+    private final ModelMapper modelMapper;
 
-    public Mp3ResourceService(Mp3ResourceRepository repository, SongServiceClient songClient) {
-        this.repository = repository;
-        this.songClient = songClient;
-    }
-
-    public Long save(byte[] file) throws IOException, TikaException, SAXException {
+    public Mp3ResourceDto save(byte[] file) {
         Mp3Resource resource = new Mp3Resource();
         resource.setFileData(file);
         Mp3Resource saved = repository.save(resource);
-        SongDto dto = extractTags(file);
-        dto.setId(saved.getId());
-        songClient.createSongMetadata(dto);
-        return saved.getId();
+        Mp3ResourceDto mp3ResourceDto = modelMapper.map(saved, Mp3ResourceDto.class);
+        try {
+            SongDto songDto = extractTags(file);
+            songDto.setId(saved.getId());
+            songClient.createSongMetadata(songDto);
+
+        } catch (IOException | TikaException | SAXException ex) {
+            throw new InvalidMp3Exception("The request body is invalid MP3.");
+        }
+        return mp3ResourceDto;
     }
 
     public byte[] getFileDataById(Long id) {
         return repository.findById(id)
-                .orElseThrow(NoSuchElementException::new)
+                .orElseThrow(() -> new ResourceNotFoundException("Resource with ID=" + id + " not found"))
                 .getFileData();
     }
 
