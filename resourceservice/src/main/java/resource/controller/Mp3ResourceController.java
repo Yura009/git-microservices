@@ -25,17 +25,14 @@ public class Mp3ResourceController {
         return ResponseEntity.ok(mp3ResourceDto);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(path = "/{id}", produces = "audio/mpeg")
     public ResponseEntity<byte[]> getResource(
             @PathVariable
             @NotNull
             @Positive
             Long id) {
         byte[] fileData = service.getFileDataById(id);
-        return ResponseEntity.ok()
-                .header("Content-Disposition", "attachment; filename=\"resource_" + id + ".mp3\"")
-                .header("Content-Type", "audio/mpeg")
-                .body(fileData);
+        return ResponseEntity.ok().body(fileData);
     }
 
     @DeleteMapping
