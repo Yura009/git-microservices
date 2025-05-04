@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import song.dto.DeleteIdsResponseDto;
+import song.dto.SongIdResponseDto;
+import song.dto.SongIdsResponseDto;
 import song.dto.SongDto;
 import song.service.SongService;
 
@@ -23,9 +24,9 @@ public class SongController {
     private final SongService service;
 
     @PostMapping
-    public ResponseEntity<Map<String, Long>> createSong(@Valid @RequestBody SongDto songDto) {
+    public ResponseEntity<SongIdResponseDto> createSong(@Valid @RequestBody SongDto songDto) {
         Long songId = service.create(songDto).getId();
-        return ResponseEntity.ok(Map.of("id", songId));
+        return ResponseEntity.ok(new SongIdResponseDto(songId));
     }
 
     @GetMapping("/{id}")
@@ -35,7 +36,7 @@ public class SongController {
     }
 
     @DeleteMapping
-    public ResponseEntity<DeleteIdsResponseDto> deleteSong(
+    public ResponseEntity<SongIdsResponseDto> deleteSong(
             @RequestParam
             @NotBlank(message = "The provided ID is invalid (e.g., contains letters, decimals, is negative, or zero).")
             @Size(max = 200, message = "The provided ID is invalid (e.g., contains letters, decimals, is negative, or zero).")
@@ -44,6 +45,6 @@ public class SongController {
                     message = "The provided ID is invalid (e.g., contains letters, decimals, is negative, or zero).")
             String id) {
         List<Long> deletedIds = service.deleteByCsv(id);
-        return ResponseEntity.ok(new DeleteIdsResponseDto(deletedIds));
+        return ResponseEntity.ok(new SongIdsResponseDto(deletedIds));
     }
 }
