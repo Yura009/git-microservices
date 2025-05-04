@@ -1,17 +1,22 @@
 package song.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import song.dto.SongIdResponseDto;
+import song.dto.SongIdsResponseDto;
 import song.dto.SongDto;
 import song.service.SongService;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Validated
 @RestController
 @RequestMapping("/songs")
 @RequiredArgsConstructor
@@ -19,26 +24,27 @@ public class SongController {
     private final SongService service;
 
     @PostMapping
-    public ResponseEntity<Map<String, Long>> createSong(@Valid @RequestBody SongDto songDto){
+    public ResponseEntity<SongIdResponseDto> createSong(@Valid @RequestBody SongDto songDto) {
         Long songId = service.create(songDto).getId();
-        return ResponseEntity.ok(Map.of("id", songId));
+        return ResponseEntity.ok(new SongIdResponseDto(songId));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SongDto> getSong(@PathVariable Long id){
+    public ResponseEntity<SongDto> getSong(@PathVariable Long id) {
         SongDto dto = service.getById(id);
         return ResponseEntity.ok(dto);
     }
 
     @DeleteMapping
-    public ResponseEntity<Map<String, Object>> deleteSong(@RequestParam String id) {
-        if (id == null || id.length() >= 200 || !id.matches("^\\d+(,\\d+)*$")) {
-            return ResponseEntity.badRequest().build();
-        }
-
+    public ResponseEntity<SongIdsResponseDto> deleteSong(
+            @RequestParam
+            @NotBlank(message = "Invalid ID format: 'V'. Only positive integers are allowed")
+            @Size(max = 200, message = "CSV string is too long: received 208 characters, maximum allowed is 200")
+            @Pattern(
+                    regexp = "^\\d+(,\\d+)*$",
+                    message = "Invalid ID format: 'V'. Only positive integers are allowed")
+            String id) {
         List<Long> deletedIds = service.deleteByCsv(id);
-        Map<String, Object> response = new HashMap<>();
-        response.put("ids", deletedIds);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new SongIdsResponseDto(deletedIds));
     }
 }
