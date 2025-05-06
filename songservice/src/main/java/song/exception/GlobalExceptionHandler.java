@@ -43,20 +43,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ValidationErrorDto> handleConstraintViolation(ConstraintViolationException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getConstraintViolations().forEach(cv -> {
-            String path = cv.getPropertyPath().toString();
-            String field = path.contains(".") ? path.substring(path.lastIndexOf('.') + 1) : path;
-            errors.put(field, cv.getMessage());
-        });
-
-        ValidationErrorDto validationErrorDto = ValidationErrorDto.builder()
+    public ResponseEntity<ErrorDto> handleConstraintViolation(ConstraintViolationException ex) {
+        ErrorDto errorDto = ErrorDto.builder()
                 .errorMessage(ex.getMessage())
                 .errorCode(String.valueOf(HttpStatus.BAD_REQUEST.value()))
-                .details(errors)
                 .build();
-        return new ResponseEntity<>(validationErrorDto, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
