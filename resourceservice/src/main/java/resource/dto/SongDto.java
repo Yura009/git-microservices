@@ -3,13 +3,16 @@ package resource.dto;
 import com.drew.lang.annotations.NotNull;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 public class SongDto {
     @NotNull
+    @Positive
     private Long id;
+
     @NotBlank
     @Size(max = 100)
     private String name;
