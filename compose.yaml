@@ -8,8 +8,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - ${POSTGRES_RESOURCE_PORT}
-    volumes:
-      - resource-db-data:/var/lib/postgresql/data
+    networks:
+      - resource_platform_network
 
   song-db:
     image: postgres:17
@@ -20,8 +20,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - ${POSTGRES_SONG_PORT}
-    volumes:
-      - song-db-data:/var/lib/postgresql/data
+    networks:
+      - resource_platform_network
 
 
   resourceservice:
@@ -35,6 +35,8 @@ services:
       SPRING_DATASOURCE_URL: ${RESOURCE_DB_URL}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - resource_platform_network
 
   songservice:
     build: ./songservice
@@ -47,7 +49,9 @@ services:
       SPRING_DATASOURCE_URL: ${SONG_DB_URL}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - resource_platform_network
 
-volumes:
-  resource-db-data:
-  song-db-data:
+networks:
+  resource_platform_network:
+    driver: bridge

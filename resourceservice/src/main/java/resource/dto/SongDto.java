@@ -10,7 +10,6 @@ import lombok.Data;
 public class SongDto {
     @NotNull
     private Long id;
-
     @NotBlank
     @Size(max = 100)
     private String name;
