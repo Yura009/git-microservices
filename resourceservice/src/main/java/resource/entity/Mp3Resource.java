@@ -12,6 +12,6 @@ public class Mp3Resource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Lob
+    @Column(name = "file_data", nullable = false, columnDefinition = "bytea")
     private byte[] fileData;
 }

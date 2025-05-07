@@ -1,5 +1,6 @@
 package resource.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
@@ -30,6 +31,7 @@ public class Mp3ResourceService {
     private final SongServiceClient songClient;
     private final ModelMapper modelMapper;
 
+    @Transactional
     public Mp3ResourceDto save(byte[] file) {
         Mp3Resource resource = new Mp3Resource();
         resource.setFileData(file);

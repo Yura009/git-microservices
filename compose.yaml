@@ -10,6 +10,8 @@ services:
       - ${POSTGRES_RESOURCE_PORT}
     networks:
       - resource_platform_network
+    volumes:
+      - ./init-scripts/resource-db:/docker-entrypoint-initdb.d
 
   song-db:
     image: postgres:17
@@ -22,6 +24,8 @@ services:
       - ${POSTGRES_SONG_PORT}
     networks:
       - resource_platform_network
+    volumes:
+      - ./init-scripts/song-db:/docker-entrypoint-initdb.d
 
 
   resourceservice:

@@ -1,6 +1,7 @@
 package song.exception;
 
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -10,13 +11,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(SongNotFoundException.class)
     public ResponseEntity<ErrorDto> handleNotFound(SongNotFoundException ex) {
+        log.error("Exception occurred: {}", ex.getMessage(), ex);
         ErrorDto errorDto = ErrorDto.builder()
                 .errorMessage(ex.getMessage())
                 .errorCode(String.valueOf(HttpStatus.NOT_FOUND.value()))
@@ -26,6 +28,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorDto> handleBadRequest(BadRequestException ex) {
+        log.error("Exception occurred: {}", ex.getMessage(), ex);
         ErrorDto errorDto = ErrorDto.builder()
                 .errorMessage(ex.getMessage())
                 .errorCode(String.valueOf(HttpStatus.BAD_REQUEST.value()))
@@ -35,6 +38,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ErrorDto> handleConflict(ConflictException ex) {
+        log.error("Exception occurred: {}", ex.getMessage(), ex);
         ErrorDto errorDto = ErrorDto.builder()
                 .errorMessage(ex.getMessage())
                 .errorCode(String.valueOf(HttpStatus.CONFLICT.value()))
@@ -44,6 +48,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorDto> handleConstraintViolation(ConstraintViolationException ex) {
+        log.error("Exception occurred: {}", ex.getMessage(), ex);
         ErrorDto errorDto = ErrorDto.builder()
                 .errorMessage(ex.getMessage())
                 .errorCode(String.valueOf(HttpStatus.BAD_REQUEST.value()))
@@ -52,7 +57,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ValidationErrorDto> handleNotValidArgument(MethodArgumentNotValidException ex){
+    public ResponseEntity<ValidationErrorDto> handleNotValidArgument(MethodArgumentNotValidException ex) {
+        log.error("Exception occurred: {}", ex.getMessage(), ex);
         Map<String, String> errorDetails = new HashMap<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
             errorDetails.put(error.getField(), error.getDefaultMessage());
