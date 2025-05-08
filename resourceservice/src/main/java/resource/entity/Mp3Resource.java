@@ -12,8 +12,6 @@ public class Mp3Resource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String fileName;
-    @Lob
+    @Column(name = "file_data", nullable = false, columnDefinition = "bytea")
     private byte[] fileData;
-    private Instant uploadedAt = Instant.now();
 }
