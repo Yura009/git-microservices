@@ -10,14 +10,18 @@ import resource.dto.SongDto;
 @RequiredArgsConstructor
 public class SongServiceClient {
     private final RestTemplate restTemplate;
+
     @Value("${song.service.url}")
     private String songServiceUrl;
 
+    private static final String SONGS_PATH = "/songs";
+
     public void createSongMetadata(SongDto dto) {
-        restTemplate.postForEntity(songServiceUrl, dto, Void.class);
+        restTemplate.postForEntity(songServiceUrl + SONGS_PATH, dto, Void.class);
     }
 
     public void deleteSongByResourceId(Long resourceId) {
-        restTemplate.delete(songServiceUrl + "?id=" + resourceId);
+        restTemplate.delete(songServiceUrl + SONGS_PATH + "?id=" + resourceId);
     }
 }
+
