@@ -8,15 +8,14 @@ import org.springframework.stereotype.Service;
 import resource.dto.Mp3ResourceDto;
 import resource.entity.Mp3Resource;
 import resource.exception.ResourceNotFoundException;
+import resource.exception.S3FileDeleteException;
 import resource.exception.S3FileReadException;
+import resource.exception.S3FileSaveException;
 import resource.repository.Mp3ResourceRepository;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,17 +36,23 @@ public class Mp3ResourceService {
     @Transactional
     public Mp3ResourceDto save(byte[] file) {
         String fileName = UUID.randomUUID().toString();
+
         PutObjectRequest request = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(fileName)
                 .contentType("audio/mpeg")
                 .build();
 
-        s3Client.putObject(request, RequestBody.fromBytes(file));
+        try {
+            s3Client.putObject(request, RequestBody.fromBytes(file));
+        } catch (S3Exception ex) {
+            throw new S3FileSaveException("Failed to upload file to S3");
+        }
 
         Mp3Resource mp3Resource = new Mp3Resource();
         mp3Resource.setName(fileName);
         Mp3Resource saved = repository.save(mp3Resource);
+
         return modelMapper.map(saved, Mp3ResourceDto.class);
     }
 
@@ -64,7 +69,7 @@ public class Mp3ResourceService {
 
         try (ResponseInputStream<GetObjectResponse> s3Object = s3Client.getObject(request)) {
             return s3Object.readAllBytes();
-        } catch (IOException ex) {
+        } catch (IOException | S3Exception ex) {
             throw new S3FileReadException("Failed to read file from S3");
         }
     }
@@ -82,10 +87,13 @@ public class Mp3ResourceService {
                         .key(fileName)
                         .build();
 
-                s3Client.deleteObject(request);
+                try {
+                    s3Client.deleteObject(request);
+                } catch (S3Exception ex) {
+                    throw new S3FileDeleteException("Failed to delete file from S3");
+                }
 
                 repository.deleteById(id);
-
                 deleted.add(id);
             }
         }
