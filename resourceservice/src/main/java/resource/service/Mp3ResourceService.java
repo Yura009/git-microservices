@@ -35,12 +35,11 @@ public class Mp3ResourceService {
 
     @Transactional
     public Mp3ResourceDto save(byte[] file) {
-        String fileName = UUID.randomUUID().toString();
+        String name = UUID.randomUUID().toString();
 
         PutObjectRequest request = PutObjectRequest.builder()
                 .bucket(bucketName)
-                .key(fileName)
-                .contentType("audio/mpeg")
+                .key(name)
                 .build();
 
         try {
@@ -50,7 +49,7 @@ public class Mp3ResourceService {
         }
 
         Mp3Resource mp3Resource = new Mp3Resource();
-        mp3Resource.setName(fileName);
+        mp3Resource.setName(name);
         Mp3Resource saved = repository.save(mp3Resource);
 
         return modelMapper.map(saved, Mp3ResourceDto.class);
@@ -60,11 +59,11 @@ public class Mp3ResourceService {
         Mp3Resource resource = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Resource with ID=" + id + " not found"));
 
-        String fileName = resource.getName();
+        String name = resource.getName();
 
         GetObjectRequest request = GetObjectRequest.builder()
                 .bucket(bucketName)
-                .key(fileName)
+                .key(name)
                 .build();
 
         try (ResponseInputStream<GetObjectResponse> s3Object = s3Client.getObject(request)) {
@@ -80,11 +79,11 @@ public class Mp3ResourceService {
             Optional<Mp3Resource> optional = repository.findById(id);
             if (optional.isPresent()) {
                 Mp3Resource resource = optional.get();
-                String fileName = resource.getName();
+                String name = resource.getName();
 
                 DeleteObjectRequest request = DeleteObjectRequest.builder()
                         .bucket(bucketName)
-                        .key(fileName)
+                        .key(name)
                         .build();
 
                 try {
