@@ -43,6 +43,7 @@ services:
     depends_on:
       - resource-db
       - eureka-server
+      - localstack
     environment:
       SPRING_DATASOURCE_URL: ${RESOURCE_DB_URL}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
@@ -84,6 +85,8 @@ services:
     volumes:
       - "./init-scripts/localstack/init-s3.py:/etc/localstack/init/ready.d/init-s3.py"
       - "./.env:/etc/localstack/init/ready.d/.env"
+    networks:
+      - resource_platform_network
 
   resourceprocessor:
     build: ./resource-processor
