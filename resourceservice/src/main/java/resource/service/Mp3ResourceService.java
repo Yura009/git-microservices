@@ -2,6 +2,7 @@ package resource.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class Mp3ResourceService {
@@ -40,11 +42,13 @@ public class Mp3ResourceService {
         PutObjectRequest request = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(name)
+                .contentType("audio/mpeg")
                 .build();
 
         try {
             s3Client.putObject(request, RequestBody.fromBytes(file));
         } catch (S3Exception ex) {
+            log.error("Failed to upload file to S3", ex);
             throw new S3FileSaveException("Failed to upload file to S3");
         }
 
@@ -69,6 +73,7 @@ public class Mp3ResourceService {
         try (ResponseInputStream<GetObjectResponse> s3Object = s3Client.getObject(request)) {
             return s3Object.readAllBytes();
         } catch (IOException | S3Exception ex) {
+            log.error("Failed to read file from S3", ex);
             throw new S3FileReadException("Failed to read file from S3");
         }
     }
@@ -89,6 +94,7 @@ public class Mp3ResourceService {
                 try {
                     s3Client.deleteObject(request);
                 } catch (S3Exception ex) {
+                    log.error("Failed to delete file from S3", ex);
                     throw new S3FileDeleteException("Failed to delete file from S3");
                 }
 
