@@ -1,7 +1,7 @@
 package com.example.resourceprocessor.service;
 
 import com.example.resourceprocessor.dto.SongDto;
-import com.example.resourceprocessor.exception.S3FileProcessException;
+import com.example.resourceprocessor.exception.Mp3ProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.exception.TikaException;
@@ -20,8 +20,8 @@ public class Mp3ProcessingService {
         try {
             return extractorService.extractTags(data);
         } catch (TikaException | IOException | SAXException ex) {
-            log.error("Failed to process file from S3", ex);
-            throw new S3FileProcessException("Failed to process file from S3");
+            log.error("Failed to extract MP3 tags", ex);
+            throw new Mp3ProcessingException("Failed to extract MP3 tags");
         }
     }
 }
