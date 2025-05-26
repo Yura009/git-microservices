@@ -97,9 +97,6 @@ services:
     networks:
       - resource_platform_network
 
-volumes:
-  minio-data:
-
 networks:
   resource_platform_network:
     driver: bridge
