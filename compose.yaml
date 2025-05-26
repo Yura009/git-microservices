@@ -43,12 +43,19 @@ services:
     depends_on:
       - resource-db
       - eureka-server
+      - localstack
     environment:
       SPRING_DATASOURCE_URL: ${RESOURCE_DB_URL}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       SONG_SERVICE_URL: ${SONG_SERVICE_URL}
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: ${EUREKA_SERVER_URL}
+      CLOUD_AWS_REGION_STATIC: ${S3_REGION}
+      CLOUD_AWS_S3_BUCKET_NAME: ${S3_RESOURCE_BUCKET_NAME}
+      CLOUD_AWS_CREDENTIALS_ACCESS_KEY: ${S3_KEY}
+      CLOUD_AWS_CREDENTIALS_SECRET_KEY: ${S3_SECRET}
+      CLOUD_AWS_S3_ENDPOINT: ${S3_URI}
+
     networks:
       - resource_platform_network
 
@@ -68,6 +75,27 @@ services:
       - resource_platform_network
     deploy:
       replicas: 2
+
+  localstack:
+    image: localstack/localstack:s3-latest
+    ports:
+      - "${LOCALSTACK_PORT}:${LOCALSTACK_PORT}"
+    environment:
+      - DEBUG=1
+    volumes:
+      - "./init-scripts/localstack/init-s3.py:/etc/localstack/init/ready.d/init-s3.py"
+      - "./.env:/etc/localstack/init/ready.d/.env"
+    networks:
+      - resource_platform_network
+
+  resourceprocessor:
+    build: ./resource-processor
+    container_name: resource-processor
+    depends_on:
+      - localstack
+      - eureka-server
+    networks:
+      - resource_platform_network
 
 networks:
   resource_platform_network:
