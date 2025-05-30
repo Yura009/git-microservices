@@ -55,6 +55,10 @@ services:
       CLOUD_AWS_CREDENTIALS_ACCESS_KEY: ${S3_KEY}
       CLOUD_AWS_CREDENTIALS_SECRET_KEY: ${S3_SECRET}
       CLOUD_AWS_S3_ENDPOINT: ${S3_URI}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
 
     networks:
       - resource_platform_network
@@ -94,6 +98,24 @@ services:
     depends_on:
       - localstack
       - eureka-server
+    environment:
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      SONG_SERVICE_URL: ${SONG_SERVICE_URL}
+      RESOURCE_SERVICE_URL: ${RESOURCE_SERVICE_URL}
+    networks:
+      - resource_platform_network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
     networks:
       - resource_platform_network
 
