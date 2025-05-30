@@ -4,7 +4,10 @@ import com.example.resourceprocessor.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Component
@@ -17,6 +20,10 @@ public class ResourceServiceClient {
 
     private static final String RESOURCES_PATH = "/resources/";
 
+    @Retryable(
+            retryFor = { ResourceNotFoundException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 2000))
     public byte[] getResourceById(String resourceId) {
         ResponseEntity<byte[]> response =
                 restTemplate.getForEntity(resourceServiceUrl + RESOURCES_PATH + resourceId, byte[].class);
