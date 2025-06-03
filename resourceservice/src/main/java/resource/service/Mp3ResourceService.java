@@ -35,7 +35,7 @@ public class Mp3ResourceService {
         mp3Resource.setName(name);
         Mp3Resource saved = repository.save(mp3Resource);
 
-        resourceMessageSender.sendResourceId(name);
+        resourceMessageSender.sendResourceId(mp3Resource.getId().toString());
 
         return modelMapper.map(saved, Mp3ResourceDto.class);
     }

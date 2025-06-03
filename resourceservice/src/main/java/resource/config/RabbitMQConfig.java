@@ -14,16 +14,16 @@ import org.springframework.retry.interceptor.RetryOperationsInterceptor;
 
 @Configuration
 public class RabbitMQConfig {
-    @Value("${rabbitmq.host}")
+    @Value("${spring.rabbitmq.host}")
     private String host;
 
-    @Value("${rabbitmq.port}")
+    @Value("${spring.rabbitmq.port}")
     private int port;
 
-    @Value("${rabbitmq.username}")
+    @Value("${spring.rabbitmq.username}")
     private String username;
 
-    @Value("${rabbitmq.password}")
+    @Value("${spring.rabbitmq.password}")
     private String password;
 
     public final static String RESOURCE_QUEUE = "resource.uploaded.queue";
@@ -53,8 +53,8 @@ public class RabbitMQConfig {
     public RetryOperationsInterceptor retryInterceptor() {
         return RetryInterceptorBuilder.stateless()
                 .maxAttempts(3)
-                .backOffOptions(2000, 2.0, 10000) // початковий delay 2 сек, multiplier 2, макс delay 10 сек
-                .recoverer(new RejectAndDontRequeueRecoverer()) // після 3х спроб відкинути повідомлення (не повертати у чергу)
+                .backOffOptions(2000, 2.0, 10000)
+                .recoverer(new RejectAndDontRequeueRecoverer())
                 .build();
     }
 }

@@ -15,7 +15,8 @@ public class ResourceMessageListener {
     private final ResourceProcessorService processorService;
 
 
-    @RabbitListener(queues = RabbitMQConfig.RESOURCE_QUEUE)
+    @RabbitListener(queues = RabbitMQConfig.RESOURCE_QUEUE,
+            containerFactory = "rabbitListenerContainerFactory")
     public void handleResourceUpload(String resourceId) {
         log.info("Resource was successfully uploaded id=" + resourceId);
         processorService.processResource(resourceId);
