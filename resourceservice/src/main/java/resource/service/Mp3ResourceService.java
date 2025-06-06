@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import resource.dto.Mp3ResourceDto;
+import resource.dto.ResourceMessageDto;
 import resource.entity.Mp3Resource;
 import resource.exception.ResourceNotFoundException;
 import resource.messaging.ResourceMessageSender;
@@ -35,7 +36,7 @@ public class Mp3ResourceService {
         mp3Resource.setName(name);
         Mp3Resource saved = repository.save(mp3Resource);
 
-        resourceMessageSender.sendResourceId(mp3Resource.getId().toString());
+        resourceMessageSender.sendResourceId(new ResourceMessageDto(mp3Resource.getId().toString()));
 
         return modelMapper.map(saved, Mp3ResourceDto.class);
     }

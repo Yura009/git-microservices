@@ -8,6 +8,7 @@ import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import resource.config.RabbitMQConfig;
+import resource.dto.ResourceMessageDto;
 import resource.exception.FailedToSendResourceException;
 
 @Slf4j
@@ -21,8 +22,8 @@ public class ResourceMessageSender {
             maxAttempts = 3,
             backoff = @Backoff(delay = 2000)
     )
-    public void sendResourceId(String resourceId) {
-        rabbitTemplate.convertAndSend(RabbitMQConfig.RESOURCE_QUEUE, resourceId);
+    public void sendResourceId(ResourceMessageDto message) {
+        rabbitTemplate.convertAndSend(RabbitMQConfig.RESOURCE_QUEUE, message);
     }
 
 
