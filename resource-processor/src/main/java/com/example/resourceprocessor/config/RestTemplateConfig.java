@@ -1,4 +1,4 @@
-package resource.config;
+package com.example.resourceprocessor.config;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;

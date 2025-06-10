@@ -6,8 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import resource.dto.Mp3ResourceDto;
+import resource.dto.ResourceMessageDto;
 import resource.entity.Mp3Resource;
 import resource.exception.ResourceNotFoundException;
+import resource.messaging.ResourceMessageSender;
 import resource.repository.Mp3ResourceRepository;
 
 import java.util.ArrayList;
@@ -22,6 +24,7 @@ public class Mp3ResourceService {
     private final Mp3ResourceRepository repository;
     private final ModelMapper modelMapper;
     private final CloudStorageService storageService;
+    private final ResourceMessageSender resourceMessageSender;
 
     @Transactional
     public Mp3ResourceDto save(byte[] file) {
@@ -32,6 +35,8 @@ public class Mp3ResourceService {
         Mp3Resource mp3Resource = new Mp3Resource();
         mp3Resource.setName(name);
         Mp3Resource saved = repository.save(mp3Resource);
+
+        resourceMessageSender.sendResourceId(new ResourceMessageDto(mp3Resource.getId().toString()));
 
         return modelMapper.map(saved, Mp3ResourceDto.class);
     }
