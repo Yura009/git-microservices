@@ -28,8 +28,8 @@ public class ResourceMessageSender {
 
 
     @Recover
-    public void recover(Exception ex, String resourceId) {
-        log.error("Failed to send message with {} ", resourceId, ex);
+    public void recover(Exception ex, ResourceMessageDto message) {
+        log.error("Failed to send message with {} ", message.getId(), ex);
         throw new FailedToSendResourceException("Resource was not sent");
     }
 }

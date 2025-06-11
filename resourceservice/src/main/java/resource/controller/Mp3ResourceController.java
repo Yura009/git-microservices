@@ -7,7 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import resource.dto.DeleteIdsResponseDto;
 import resource.dto.Mp3ResourceDto;
-import resource.service.Mp3ResourceService;
+import resource.service.impl.Mp3ResourceServiceImpl;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("resources")
 @RequiredArgsConstructor
 public class Mp3ResourceController {
-    private final Mp3ResourceService service;
+    private final Mp3ResourceServiceImpl service;
 
     @PostMapping(consumes = "audio/mpeg")
     public ResponseEntity<Mp3ResourceDto> upload(@RequestBody byte[] file) {

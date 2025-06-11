@@ -18,7 +18,7 @@ import java.io.IOException;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class S3CloudStorageService implements CloudStorageService {
+public class S3CloudStorageServiceImpl implements CloudStorageService {
 
     private final S3Client s3Client;
 
