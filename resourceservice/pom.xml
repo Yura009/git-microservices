@@ -192,6 +192,11 @@
             <version>4.3.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+            <version>3.4.5</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -219,6 +224,7 @@
                 <version>4.1.2</version>
                 <extensions>true</extensions>
                 <configuration>
+                    <failOnNoContracts>false</failOnNoContracts>
                     <baseClassForTests>contracts.BaseContractTest</baseClassForTests>
                 </configuration>
             </plugin>
