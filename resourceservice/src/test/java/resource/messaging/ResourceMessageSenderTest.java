@@ -24,8 +24,8 @@ class ResourceMessageSenderTest {
     void shouldSendMessageToQueue() {
         ResourceMessageDto message = new ResourceMessageDto("123");
 
-        sender.sendResourceId(message);
+        sender.sendResourceUploaded(message);
 
-        verify(rabbitTemplate).convertAndSend(RabbitMQConfig.RESOURCE_QUEUE, message);
+        verify(rabbitTemplate).convertAndSend(RabbitMQConfig.RESOURCE_UPLOADED_QUEUE, message);
     }
 }

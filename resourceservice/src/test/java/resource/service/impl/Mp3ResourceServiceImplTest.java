@@ -68,7 +68,7 @@ class Mp3ResourceServiceImplTest {
         assertEquals(expectedDto.getId(), actualDto.getId());
         verify(storageService).uploadFile(any(String.class), eq(fileContent));
         verify(repository).save(any(Mp3Resource.class));
-        verify(messageSender).sendResourceId(argThat(dto -> dto.getId().equals(resourceId.toString())));
+        verify(messageSender).sendResourceUploaded(argThat(dto -> dto.getId().equals(resourceId.toString())));
     }
 
     @Test

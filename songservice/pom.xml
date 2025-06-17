@@ -5,11 +5,11 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.5</version>
-		<relativePath/> <!-- lookup parent from resource.repository -->
+		<version>3.2.5</version>
+		<relativePath/>
 	</parent>
 	<groupId>com.yuriimoroziuk</groupId>
-	<artifactId>training</artifactId>
+	<artifactId>song-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>training</name>
 	<description>Training Course Microservices</description>
@@ -92,7 +92,7 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter</artifactId>
-			<version>5.10.2</version>
+			<version>5.10.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -116,19 +116,19 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-test</artifactId>
-			<version>3.4.5</version>
+			<version>3.2.5</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-contract-verifier</artifactId>
-			<version>4.3.0</version>
+			<version>4.1.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
-			<version>3.4.5</version>
+			<version>3.2.5</version>
 		</dependency>
 	</dependencies>
 
@@ -149,7 +149,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.2.5</version>
+				<version>3.0.0</version>
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.cloud</groupId>
@@ -157,16 +157,10 @@
 				<version>4.1.2</version>
 				<extensions>true</extensions>
 				<configuration>
-					<baseClassForTests>song.contracts.SongBaseTestClass</baseClassForTests>
+					<baseClassForTests>
+						contracts.BaseTestClass
+					</baseClassForTests>
 				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>convert</goal>
-							<goal>generateTests</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>

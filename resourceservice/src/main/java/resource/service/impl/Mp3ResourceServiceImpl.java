@@ -39,7 +39,7 @@ public class Mp3ResourceServiceImpl implements Mp3ResourceService {
         mp3Resource.setName(name);
         Mp3Resource saved = repository.save(mp3Resource);
 
-        resourceMessageSender.sendResourceId(new ResourceMessageDto(saved.getId().toString()));
+        resourceMessageSender.sendResourceUploaded(new ResourceMessageDto(saved.getId().toString()));
 
         return modelMapper.map(saved, Mp3ResourceDto.class);
     }
@@ -61,6 +61,7 @@ public class Mp3ResourceServiceImpl implements Mp3ResourceService {
                 Mp3Resource resource = optional.get();
                 storageService.deleteFile(resource.getName());
                 repository.deleteById(id);
+                resourceMessageSender.sendResourceDeleted(new ResourceMessageDto(id.toString()));
                 deleted.add(id);
             }
         }

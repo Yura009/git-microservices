@@ -22,8 +22,12 @@ public class ResourceMessageSender {
             maxAttempts = 3,
             backoff = @Backoff(delay = 2000)
     )
-    public void sendResourceId(ResourceMessageDto message) {
-        rabbitTemplate.convertAndSend(RabbitMQConfig.RESOURCE_QUEUE, message);
+    public void sendResourceUploaded(ResourceMessageDto message) {
+        rabbitTemplate.convertAndSend(RabbitMQConfig.RESOURCE_UPLOADED_QUEUE, message);
+    }
+
+    public void sendResourceDeleted(ResourceMessageDto message) {
+        rabbitTemplate.convertAndSend(RabbitMQConfig.RESOURCE_DELETED_QUEUE, message);
     }
 
 
