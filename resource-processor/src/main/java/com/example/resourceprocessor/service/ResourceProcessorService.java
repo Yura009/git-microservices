@@ -34,6 +34,18 @@ public class ResourceProcessorService {
         log.info("Metadata processed and sent for resource ID: {}", resourceId);
     }
 
+    public void deleteSongForResource(String resourceId) {
+        try {
+            Long id = Long.parseLong(resourceId);
+            songServiceClient.deleteSongById(id);
+            log.info("Deleted song for resource ID: {}", resourceId);
+        } catch (NumberFormatException ex) {
+            log.error("Invalid resource ID format");
+        } catch (Exception ex) {
+            log.error("Failed to delete song for resource ID");
+        }
+    }
+
     @Recover
     public byte[] recover(Exception ex, String resourceId) {
         log.error("Failed to get resource {} after retries", resourceId, ex);

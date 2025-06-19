@@ -16,11 +16,19 @@ public class ResourceMessageListener {
     private final ResourceProcessorService processorService;
 
 
-    @RabbitListener(queues = RabbitMQConfig.RESOURCE_QUEUE,
+    @RabbitListener(queues = RabbitMQConfig.RESOURCE_UPLOADED_QUEUE,
             containerFactory = "rabbitListenerContainerFactory")
     public void handleResourceUpload(ResourceMessageDto message) {
         String resourceId = message.getId();
         log.info("Resource was successfully uploaded id=" + resourceId);
         processorService.processResource(resourceId);
+    }
+
+    @RabbitListener(queues = RabbitMQConfig.RESOURCE_DELETED_QUEUE,
+            containerFactory = "rabbitListenerContainerFactory")
+    public void handleResourceDelete(ResourceMessageDto message) {
+        String resourceId = message.getId();
+        log.info("Resource was successfully deleted id=" + resourceId);
+        processorService.deleteSongForResource(message.getId());
     }
 }

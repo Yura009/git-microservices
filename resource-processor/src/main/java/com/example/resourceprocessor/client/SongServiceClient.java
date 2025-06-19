@@ -39,5 +39,14 @@ public class SongServiceClient {
             throw new SongMetadataSendException("Failed to send song metadata.");
         }
     }
+
+    public void deleteSongById(Long resourceId) {
+        String deleteUrl = songServiceUrl + SONGS_PATH + "?id=" + resourceId;
+        try {
+            restTemplate.delete(deleteUrl);
+        } catch (Exception ex) {
+            throw new ResourceNotFoundException("Failed to delete song");
+        }
+    }
 }
 

@@ -2,9 +2,14 @@ services:
   eureka-server:
     build: ./eureka-server
     ports:
-      - "8761:8761"
+      - "${EUREKA_PORT}:${EUREKA_PORT}"
     networks:
       - resource_platform_network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:${EUREKA_PORT}/actuator/health"]
+      interval: ${HEALTHCHECK_INTERVAL}
+      timeout: ${HEALTHCHECK_TIMEOUT}
+      retries: ${HEALTHCHECK_RETRIES}
 
   resource-db:
     image: postgres:17
@@ -19,6 +24,11 @@ services:
       - resource_platform_network
     volumes:
       - ./init-scripts/resource-db:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER}" ]
+      interval: ${HEALTHCHECK_INTERVAL}
+      timeout: ${HEALTHCHECK_TIMEOUT}
+      retries: ${HEALTHCHECK_RETRIES}
 
   song-db:
     image: postgres:17
@@ -33,18 +43,27 @@ services:
       - resource_platform_network
     volumes:
       - ./init-scripts/song-db:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER}" ]
+      interval: ${HEALTHCHECK_INTERVAL}
+      timeout: ${HEALTHCHECK_TIMEOUT}
+      retries: ${HEALTHCHECK_RETRIES}
 
 
   resourceservice:
     build: ./resourceservice
     container_name: resource-service
     ports:
-      - "8081:8081"
+      - "${RESOURCE_PORT}:${RESOURCE_PORT}"
     depends_on:
-      - resource-db
-      - eureka-server
-      - localstack
-      - rabbitmq
+      resource-db:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: ${RESOURCE_DB_URL}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
@@ -60,17 +79,23 @@ services:
       SPRING_RABBITMQ_PORT: ${RABBITMQ_PORT}
       SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
       SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
-
     networks:
       - resource_platform_network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:${RESOURCE_PORT}/actuator/health" ]
+      interval: ${HEALTHCHECK_INTERVAL}
+      timeout: ${HEALTHCHECK_TIMEOUT}
+      retries: ${HEALTHCHECK_RETRIES}
 
   songservice:
     build: ./songservice
     ports:
-      - "8082-8083:8082"
+      - "${SONG_PORT}-8083:${SONG_PORT}"
     depends_on:
-      - song-db
-      - eureka-server
+      song-db:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: ${SONG_DB_URL}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
@@ -80,6 +105,11 @@ services:
       - resource_platform_network
     deploy:
       replicas: 2
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:${SONG_PORT}/actuator/health" ]
+      interval: ${HEALTHCHECK_INTERVAL}
+      timeout: ${HEALTHCHECK_TIMEOUT}
+      retries: ${HEALTHCHECK_RETRIES}
 
   localstack:
     image: localstack/localstack:s3-latest
@@ -92,14 +122,22 @@ services:
       - "./.env:/etc/localstack/init/ready.d/.env"
     networks:
       - resource_platform_network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localstack:${LOCALSTACK_PORT}/_localstack/health" ]
+      interval: ${HEALTHCHECK_INTERVAL}
+      timeout: ${HEALTHCHECK_TIMEOUT}
+      retries: ${HEALTHCHECK_RETRIES}
 
   resource-processor:
     build: ./resource-processor
     container_name: resource-processor
     depends_on:
-      - localstack
-      - eureka-server
-      - rabbitmq
+      localstack:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
       SPRING_RABBITMQ_HOST: ${RABBITMQ_HOST}
       SPRING_RABBITMQ_PORT: ${RABBITMQ_PORT}
@@ -110,6 +148,11 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: ${EUREKA_SERVER_URL}
     networks:
       - resource_platform_network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8084/actuator/health" ]
+      interval: ${HEALTHCHECK_INTERVAL}
+      timeout: ${HEALTHCHECK_TIMEOUT}
+      retries: ${HEALTHCHECK_RETRIES}
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -121,6 +164,11 @@ services:
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
     networks:
       - resource_platform_network
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: ${HEALTHCHECK_INTERVAL}
+      timeout: ${HEALTHCHECK_TIMEOUT}
+      retries: ${HEALTHCHECK_RETRIES}
 
 networks:
   resource_platform_network:

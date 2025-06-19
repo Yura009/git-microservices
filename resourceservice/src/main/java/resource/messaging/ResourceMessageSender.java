@@ -22,14 +22,18 @@ public class ResourceMessageSender {
             maxAttempts = 3,
             backoff = @Backoff(delay = 2000)
     )
-    public void sendResourceId(ResourceMessageDto message) {
-        rabbitTemplate.convertAndSend(RabbitMQConfig.RESOURCE_QUEUE, message);
+    public void sendResourceUploaded(ResourceMessageDto message) {
+        rabbitTemplate.convertAndSend(RabbitMQConfig.RESOURCE_UPLOADED_QUEUE, message);
+    }
+
+    public void sendResourceDeleted(ResourceMessageDto message) {
+        rabbitTemplate.convertAndSend(RabbitMQConfig.RESOURCE_DELETED_QUEUE, message);
     }
 
 
     @Recover
-    public void recover(Exception ex, String resourceId) {
-        log.error("Failed to send message with {} ", resourceId, ex);
+    public void recover(Exception ex, ResourceMessageDto message) {
+        log.error("Failed to send message with {} ", message.getId(), ex);
         throw new FailedToSendResourceException("Resource was not sent");
     }
 }
