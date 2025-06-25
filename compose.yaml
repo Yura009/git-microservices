@@ -11,6 +11,23 @@ services:
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}
 
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "${API_GATEWAY_PORT}:${API_GATEWAY_PORT}"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: ${EUREKA_SERVER_URL}
+    networks:
+      - resource_platform_network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:${API_GATEWAY_PORT}/actuator/health" ]
+      interval: ${HEALTHCHECK_INTERVAL}
+      timeout: ${HEALTHCHECK_TIMEOUT}
+      retries: ${HEALTHCHECK_RETRIES}
+
   resource-db:
     image: postgres:17
     container_name: resource-db
