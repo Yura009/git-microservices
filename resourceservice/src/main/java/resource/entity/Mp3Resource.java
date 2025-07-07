@@ -14,4 +14,5 @@ public class Mp3Resource {
     private Long id;
     @Column(nullable = false)
     private String name;
+    private String state;
 }
